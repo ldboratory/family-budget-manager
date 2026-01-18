@@ -28,7 +28,10 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
-    "@radix-ui/react-toast": "^1.2.2"
+    "@radix-ui/react-toast": "^1.2.2",
+    "react-hook-form": "^7.53.0",
+    "@hookform/resolvers": "^3.9.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "typescript": "^5.6.3",
