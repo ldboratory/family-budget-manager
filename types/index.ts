@@ -705,3 +705,52 @@ export const DEFAULT_TRANSACTION_FILTER: TransactionFilter = {
   sortBy: "date",
   sortOrder: "desc",
 };
+
+// =====================================================
+// 12. 초대 (Invite)
+// Firestore: /households/{householdId}/invites/{inviteId}
+// =====================================================
+
+/**
+ * 초대 상태
+ */
+export type InviteStatus = "pending" | "accepted" | "declined" | "expired";
+
+/**
+ * 초대
+ *
+ * @description 가계부 멤버 초대
+ * @firestore /households/{householdId}/invites/{inviteId}
+ */
+export interface Invite extends FirestoreDocument {
+  /** 가계부 ID (필수) */
+  householdId: string;
+  /** 가계부 이름 (필수, 비정규화) */
+  householdName: string;
+  /** 초대받는 이메일 (필수) */
+  email: string;
+  /** 초대 역할 (필수) */
+  role: UserRole;
+  /** 초대 상태 (필수) */
+  status: InviteStatus;
+  /** 초대 코드 (필수, 고유) */
+  inviteCode: string;
+  /** 초대한 사용자 UID (필수) */
+  invitedBy: string;
+  /** 초대한 사용자 이름 (필수) */
+  invitedByName: string;
+  /** 만료 시각 (필수) */
+  expiresAt: Timestamp;
+  /** 수락 시각 (선택) */
+  acceptedAt?: Timestamp;
+  /** 수락한 사용자 UID (선택) */
+  acceptedBy?: string;
+}
+
+/**
+ * 초대 생성 입력 타입
+ */
+export type InviteCreateInput = {
+  email: string;
+  role?: UserRole;
+};
