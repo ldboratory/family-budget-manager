@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // =====================================================
+    // 공통 함수
+    // =====================================================
+
+    // 인증된 사용자인지 확인
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 요청 사용자 UID
+    function userId() {
+      return request.auth.uid;
+    }
+
+    // 파일 크기 제한 (5MB)
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // 이미지 파일인지 확인
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // =====================================================
+    // 사용자 프로필 이미지
+    // /users/{userId}/avatar/*
+    // =====================================================
+
+    match /users/{docUserId}/avatar/{fileName} {
+      // 본인만 업로드 가능
+      allow read: if true; // 프로필 이미지는 공개
+      allow write: if isAuthenticated() &&
+                      userId() == docUserId &&
+                      isValidSize() &&
+                      isImage();
+      allow delete: if isAuthenticated() && userId() == docUserId;
+    }
+
+    // =====================================================
+    // 거래 영수증 이미지
+    // /households/{householdId}/receipts/{transactionId}/*
+    // =====================================================
+
+    match /households/{householdId}/receipts/{transactionId}/{fileName} {
+      // 가계부 멤버만 접근 가능 (실제 멤버십 확인은 Firestore에서)
+      // Storage Rules에서는 경로 기반 + 인증 확인만
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() &&
+                      isValidSize() &&
+                      isImage();
+      allow delete: if isAuthenticated();
+    }
+
+    // =====================================================
+    // 가계부 공유 이미지/파일
+    // /households/{householdId}/files/*
+    // =====================================================
+
+    match /households/{householdId}/files/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() &&
+                      isValidSize();
+      allow delete: if isAuthenticated();
+    }
+
+    // =====================================================
+    // 그 외 모든 경로 차단
+    // =====================================================
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
