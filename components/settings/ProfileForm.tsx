@@ -29,6 +29,7 @@ export function ProfileForm() {
   const { user, loading: isLoading } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +75,7 @@ export function ProfileForm() {
     if (!user) return;
 
     setIsUpdating(true);
+    setSaveSuccess(false);
     try {
       await firebaseUpdateProfile(user, {
         displayName: data.displayName,
@@ -82,6 +84,9 @@ export function ProfileForm() {
       });
       setIsEditing(false);
       setAvatarPreview(null);
+      setSaveSuccess(true);
+      // 3초 후 성공 메시지 숨기기
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
       console.error("프로필 업데이트 실패:", error);
       alert("프로필 업데이트에 실패했습니다.");
@@ -215,6 +220,13 @@ export function ProfileForm() {
                     {user?.email}
                   </p>
                 </div>
+
+                {saveSuccess && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <Check className="h-4 w-4" />
+                    프로필이 저장되었습니다
+                  </div>
+                )}
 
                 <button
                   type="button"

@@ -17,7 +17,7 @@ import {
   FileJson,
   Calendar,
 } from "lucide-react";
-import { useBackup } from "@/hooks/usePreferences";
+import { getLocalDB } from "@/lib/db/indexedDB";
 
 interface BackupSectionProps {
   householdId?: string;
@@ -25,7 +25,9 @@ interface BackupSectionProps {
 }
 
 export function BackupSection({ householdId, householdName }: BackupSectionProps) {
-  const backup = useBackup();
+  const [isPending, setPending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const [lastBackup, setLastBackup] = useState<{
     fileName: string;
     date: Date;
@@ -38,14 +40,63 @@ export function BackupSection({ householdId, householdName }: BackupSectionProps
       return;
     }
 
+    setPending(true);
+    setIsSuccess(false);
+    setError(null);
+
     try {
-      const result = await backup.mutateAsync(householdId);
+      const localDB = getLocalDB();
+
+      // 로컬 데이터 수집
+      const transactions = await localDB.table("transactions").toArray();
+      const assets = await localDB.table("assets").toArray();
+      const categories = await localDB.table("categories").toArray();
+      const preferences = await localDB.table("preferences").toArray();
+
+      // 백업 데이터 구성
+      const backupData = {
+        version: "1.0",
+        exportedAt: new Date().toISOString(),
+        householdId,
+        householdName,
+        data: {
+          transactions,
+          assets,
+          categories,
+          preferences,
+        },
+        metadata: {
+          transactionCount: transactions.length,
+          assetCount: assets.length,
+          categoryCount: categories.length,
+        },
+      };
+
+      // JSON 파일 다운로드
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], {
+        type: "application/json",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const fileName = `household-backup-${new Date().toISOString().split("T")[0]}.json`;
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
       setLastBackup({
-        fileName: result.fileName,
+        fileName,
         date: new Date(),
       });
-    } catch (error) {
-      // 에러는 mutation에서 처리
+      setIsSuccess(true);
+    } catch (err) {
+      console.error("백업 실패:", err);
+      setError(err instanceof Error ? err : new Error("백업에 실패했습니다"));
+    } finally {
+      setPending(false);
     }
   };
 
@@ -86,10 +137,10 @@ export function BackupSection({ householdId, householdName }: BackupSectionProps
         {/* 백업 버튼 */}
         <button
           onClick={handleBackup}
-          disabled={backup.isPending || !householdId}
+          disabled={isPending || !householdId}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {backup.isPending ? (
+          {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
               백업 생성 중...
@@ -111,7 +162,7 @@ export function BackupSection({ householdId, householdName }: BackupSectionProps
         )}
 
         {/* 백업 성공 */}
-        {backup.isSuccess && lastBackup && (
+        {isSuccess && lastBackup && (
           <div className="flex items-center gap-3 rounded-lg bg-green-50 p-4 text-green-700 dark:bg-green-900/20 dark:text-green-400">
             <CheckCircle className="h-5 w-5 flex-shrink-0" />
             <div>
@@ -124,15 +175,13 @@ export function BackupSection({ householdId, householdName }: BackupSectionProps
         )}
 
         {/* 백업 에러 */}
-        {backup.isError && (
+        {error && (
           <div className="flex items-center gap-3 rounded-lg bg-destructive/10 p-4 text-destructive">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <div>
               <p className="font-medium">백업 실패</p>
               <p className="text-sm opacity-80">
-                {backup.error instanceof Error
-                  ? backup.error.message
-                  : "백업 중 오류가 발생했습니다"}
+                {error.message}
               </p>
             </div>
           </div>

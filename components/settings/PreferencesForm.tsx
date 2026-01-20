@@ -8,13 +8,8 @@
 
 "use client";
 
-import { useEffect } from "react";
-import { Sun, Moon, Monitor, Loader2 } from "lucide-react";
-import {
-  usePreferences,
-  useUpdatePreferences,
-  applyTheme,
-} from "@/hooks/usePreferences";
+import { useState, useEffect } from "react";
+import { Sun, Moon, Monitor, Loader2, Check } from "lucide-react";
 import type { ThemeMode, CurrencyCode, PaymentMethod } from "@/types";
 
 // 테마 옵션
@@ -41,46 +36,100 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
   { value: "other", label: "기타" },
 ];
 
-export function PreferencesForm() {
-  const { data: preferences, isLoading } = usePreferences();
-  const updatePreferences = useUpdatePreferences();
+// localStorage 키
+const STORAGE_KEYS = {
+  theme: "theme",
+  currency: "defaultCurrency",
+  paymentMethod: "defaultPaymentMethod",
+};
 
-  // 테마 변경 시 즉시 적용
+// 테마 적용 함수
+function applyTheme(theme: ThemeMode): void {
+  if (typeof window === "undefined") return;
+
+  const root = document.documentElement;
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  if (theme === "dark" || (theme === "system" && systemDark)) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
+  localStorage.setItem(STORAGE_KEYS.theme, theme);
+}
+
+// localStorage에서 값 가져오기
+function getStoredValue<T>(key: string, defaultValue: T): T {
+  if (typeof window === "undefined") return defaultValue;
+  const stored = localStorage.getItem(key);
+  return stored ? (stored as T) : defaultValue;
+}
+
+export function PreferencesForm() {
+  const [mounted, setMounted] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+
+  // 로컬 상태
+  const [theme, setTheme] = useState<ThemeMode>("system");
+  const [currency, setCurrency] = useState<CurrencyCode>("KRW");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+
+  // 마운트 시 localStorage에서 값 로드
   useEffect(() => {
-    if (preferences?.theme) {
-      applyTheme(preferences.theme);
-    }
-  }, [preferences?.theme]);
+    setMounted(true);
+    setTheme(getStoredValue(STORAGE_KEYS.theme, "system") as ThemeMode);
+    setCurrency(getStoredValue(STORAGE_KEYS.currency, "KRW") as CurrencyCode);
+    setPaymentMethod(getStoredValue(STORAGE_KEYS.paymentMethod, "card") as PaymentMethod);
+  }, []);
+
+  // 시스템 테마 변경 감지
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => {
+      if (theme === "system") {
+        applyTheme("system");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [theme]);
 
   // 테마 변경
-  const handleThemeChange = async (theme: ThemeMode) => {
-    try {
-      await updatePreferences.mutateAsync({ theme });
-      applyTheme(theme);
-    } catch (error) {
-      // 에러는 mutation에서 처리
-    }
+  const handleThemeChange = (newTheme: ThemeMode) => {
+    setTheme(newTheme);
+    applyTheme(newTheme);
+    showSaveStatus();
   };
 
   // 통화 변경
-  const handleCurrencyChange = async (currency: CurrencyCode) => {
-    try {
-      await updatePreferences.mutateAsync({ defaultCurrency: currency });
-    } catch (error) {
-      // 에러는 mutation에서 처리
-    }
+  const handleCurrencyChange = (newCurrency: CurrencyCode) => {
+    setCurrency(newCurrency);
+    localStorage.setItem(STORAGE_KEYS.currency, newCurrency);
+    showSaveStatus();
   };
 
   // 결제수단 변경
-  const handlePaymentMethodChange = async (method: PaymentMethod) => {
-    try {
-      await updatePreferences.mutateAsync({ defaultPaymentMethod: method });
-    } catch (error) {
-      // 에러는 mutation에서 처리
-    }
+  const handlePaymentMethodChange = (method: PaymentMethod) => {
+    setPaymentMethod(method);
+    localStorage.setItem(STORAGE_KEYS.paymentMethod, method);
+    showSaveStatus();
   };
 
-  if (isLoading) {
+  // 저장 상태 표시
+  const showSaveStatus = () => {
+    setSaveStatus("saving");
+    setTimeout(() => {
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    }, 300);
+  };
+
+  if (!mounted) {
     return (
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="animate-pulse space-y-6">
@@ -110,16 +159,20 @@ export function PreferencesForm() {
               <button
                 key={option.value}
                 onClick={() => handleThemeChange(option.value)}
-                disabled={updatePreferences.isPending}
-                className={`flex flex-col items-center gap-2 rounded-xl border-2 px-6 py-4 transition-all ${
-                  preferences?.theme === option.value
+                className={`relative flex flex-col items-center gap-2 rounded-xl border-2 px-6 py-4 transition-all ${
+                  theme === option.value
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50 hover:bg-accent"
                 }`}
               >
+                {theme === option.value && (
+                  <div className="absolute right-2 top-2">
+                    <Check className="h-4 w-4 text-primary" />
+                  </div>
+                )}
                 <span
                   className={
-                    preferences?.theme === option.value
+                    theme === option.value
                       ? "text-primary"
                       : "text-muted-foreground"
                   }
@@ -128,7 +181,7 @@ export function PreferencesForm() {
                 </span>
                 <span
                   className={`text-sm font-medium ${
-                    preferences?.theme === option.value
+                    theme === option.value
                       ? "text-primary"
                       : "text-foreground"
                   }`}
@@ -147,12 +200,11 @@ export function PreferencesForm() {
           </label>
           <select
             id="currency"
-            value={preferences?.defaultCurrency ?? "KRW"}
+            value={currency}
             onChange={(e) =>
               handleCurrencyChange(e.target.value as CurrencyCode)
             }
-            disabled={updatePreferences.isPending}
-            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50"
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
           >
             {CURRENCY_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -172,12 +224,11 @@ export function PreferencesForm() {
           </label>
           <select
             id="paymentMethod"
-            value={preferences?.defaultPaymentMethod ?? "card"}
+            value={paymentMethod}
             onChange={(e) =>
               handlePaymentMethodChange(e.target.value as PaymentMethod)
             }
-            disabled={updatePreferences.isPending}
-            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50"
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
           >
             {PAYMENT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -191,10 +242,16 @@ export function PreferencesForm() {
         </div>
 
         {/* 저장 상태 표시 */}
-        {updatePreferences.isPending && (
+        {saveStatus === "saving" && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             저장 중...
+          </div>
+        )}
+        {saveStatus === "saved" && (
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <Check className="h-4 w-4" />
+            저장됨
           </div>
         )}
       </div>

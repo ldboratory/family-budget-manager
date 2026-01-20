@@ -23,20 +23,17 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { ProfileForm, PreferencesForm, BackupSection, ProfileCard, LogoutButton } from "@/components/settings";
-import { useProfile } from "@/hooks/usePreferences";
-import { LogOut } from "lucide-react";
 
 // 가계부 선택 훅 (임시 - 실제 구현에서는 useHouseholds 사용)
 function useCurrentHousehold() {
   const { user } = useAuthContext();
-  const { data: profile } = useProfile();
 
-  // 첫 번째 가계부를 기본 선택
-  const householdId = profile?.householdIds?.[0];
+  // 임시로 사용자 ID 기반 가계부 ID 사용
+  const householdId = user?.uid ? `household-${user.uid}` : undefined;
 
   return {
     householdId,
-    householdName: "내 가계부", // 실제 구현에서는 가계부 이름 조회
+    householdName: "내 가계부",
   };
 }
 
