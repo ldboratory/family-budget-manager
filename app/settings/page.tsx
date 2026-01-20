@@ -22,8 +22,9 @@ import {
   Home,
 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
-import { ProfileForm, PreferencesForm, BackupSection } from "@/components/settings";
+import { ProfileForm, PreferencesForm, BackupSection, ProfileCard, LogoutButton } from "@/components/settings";
 import { useProfile } from "@/hooks/usePreferences";
+import { LogOut } from "lucide-react";
 
 // 가계부 선택 훅 (임시 - 실제 구현에서는 useHouseholds 사용)
 function useCurrentHousehold() {
@@ -165,11 +166,22 @@ export default function SettingsPage() {
                 </div>
                 <ChevronRight className="h-4 w-4" />
               </Link>
+
+              {/* 로그아웃 */}
+              <div className="mt-6 pt-6 border-t border-border">
+                <LogoutButton variant="outline" fullWidth confirmClearData />
+              </div>
             </nav>
           </aside>
 
           {/* 메인 콘텐츠 - 데스크톱 */}
-          <div className="hidden flex-1 lg:block">{renderSection()}</div>
+          <div className="hidden flex-1 lg:block">
+            {/* 프로필 카드 */}
+            <div className="mb-6">
+              <ProfileCard />
+            </div>
+            {renderSection()}
+          </div>
 
           {/* 모바일 레이아웃 */}
           <div className="lg:hidden">
@@ -214,6 +226,11 @@ export default function SettingsPage() {
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
+
+                {/* 로그아웃 */}
+                <div className="mt-6 pt-6 border-t border-border">
+                  <LogoutButton variant="destructive" fullWidth confirmClearData />
+                </div>
               </div>
             ) : (
               /* 상세 섹션 */

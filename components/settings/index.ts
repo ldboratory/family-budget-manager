@@ -5,3 +5,6 @@
 export { ProfileForm } from "./ProfileForm";
 export { PreferencesForm } from "./PreferencesForm";
 export { BackupSection } from "./BackupSection";
+export { ProfileCard } from "./ProfileCard";
+export { ThemeSelector, applyTheme, getSavedTheme, initializeTheme } from "./ThemeSelector";
+export { LogoutButton, LogoutLink } from "./LogoutButton";
