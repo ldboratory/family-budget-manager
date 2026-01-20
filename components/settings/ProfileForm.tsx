@@ -12,7 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Camera, User, Loader2, Check, X } from "lucide-react";
-import { useProfile, useUpdateProfile } from "@/hooks/usePreferences";
+import { useAuthContext } from "@/components/auth/AuthProvider";
+import { updateProfile as firebaseUpdateProfile } from "firebase/auth";
 
 // 프로필 수정 스키마
 const profileSchema = z.object({
@@ -25,9 +26,9 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function ProfileForm() {
-  const { data: profile, isLoading } = useProfile();
-  const updateProfile = useUpdateProfile();
+  const { user, loading: isLoading } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +40,7 @@ export function ProfileForm() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     values: {
-      displayName: profile?.displayName ?? "",
+      displayName: user?.displayName ?? "",
     },
   });
 
@@ -70,16 +71,22 @@ export function ProfileForm() {
 
   // 폼 제출
   const onSubmit = async (data: ProfileFormData) => {
+    if (!user) return;
+
+    setIsUpdating(true);
     try {
-      await updateProfile.mutateAsync({
+      await firebaseUpdateProfile(user, {
         displayName: data.displayName,
         // TODO: 실제 구현에서는 Firebase Storage에 업로드 후 URL 사용
-        ...(avatarPreview && { avatar: avatarPreview }),
+        ...(avatarPreview && { photoURL: avatarPreview }),
       });
       setIsEditing(false);
       setAvatarPreview(null);
     } catch (error) {
-      // 에러는 mutation에서 처리
+      console.error("프로필 업데이트 실패:", error);
+      alert("프로필 업데이트에 실패했습니다.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -115,9 +122,9 @@ export function ProfileForm() {
           {/* 아바타 */}
           <div className="relative flex-shrink-0">
             <div className="relative">
-              {avatarPreview || profile?.avatar ? (
+              {avatarPreview || user?.photoURL ? (
                 <img
-                  src={avatarPreview || profile?.avatar}
+                  src={avatarPreview || user?.photoURL || ""}
                   alt="프로필 사진"
                   className="h-20 w-20 rounded-full object-cover"
                 />
@@ -176,7 +183,7 @@ export function ProfileForm() {
                     type="button"
                     onClick={handleCancel}
                     className="flex items-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
-                    disabled={updateProfile.isPending}
+                    disabled={isUpdating}
                   >
                     <X className="h-4 w-4" />
                     취소
@@ -184,11 +191,9 @@ export function ProfileForm() {
                   <button
                     type="submit"
                     className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-                    disabled={
-                      updateProfile.isPending || (!isDirty && !avatarPreview)
-                    }
+                    disabled={isUpdating || (!isDirty && !avatarPreview)}
                   >
-                    {updateProfile.isPending ? (
+                    {isUpdating ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
                         저장 중...
@@ -205,9 +210,9 @@ export function ProfileForm() {
             ) : (
               <>
                 <div>
-                  <p className="text-lg font-medium">{profile?.displayName}</p>
+                  <p className="text-lg font-medium">{user?.displayName || "이름 없음"}</p>
                   <p className="text-sm text-muted-foreground">
-                    {profile?.email}
+                    {user?.email}
                   </p>
                 </div>
 

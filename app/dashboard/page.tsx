@@ -299,7 +299,7 @@ export default function DashboardPage() {
             <span className="text-xs">자산</span>
           </Link>
           <Link
-            href="/dashboard"
+            href="/settings"
             className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground"
           >
             <Settings className="h-5 w-5" />
