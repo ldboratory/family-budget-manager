@@ -58,11 +58,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const categoryData: Record<string, { amount: number; count: number }> = {};
 
     transactions.forEach((t: any) => {
-      if (!categoryData[t.categoryId]) {
-        categoryData[t.categoryId] = { amount: 0, count: 0 };
+      const catId = t.categoryId as string;
+      if (!categoryData[catId]) {
+        categoryData[catId] = { amount: 0, count: 0 };
       }
-      categoryData[t.categoryId].amount += t.amount;
-      categoryData[t.categoryId].count += 1;
+      const catData = categoryData[catId];
+      catData.amount += t.amount;
+      catData.count += 1;
     });
 
     const defaultCategories =

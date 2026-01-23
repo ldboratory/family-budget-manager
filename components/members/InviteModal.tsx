@@ -52,7 +52,7 @@ const inviteSchema = z.object({
 type InviteFormData = z.infer<typeof inviteSchema>;
 
 export function InviteModal({
-  householdId,
+  householdId: _householdId,
   householdInviteCode,
   householdInviteCodeExpiresAt,
   pendingInvites = [],

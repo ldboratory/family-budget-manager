@@ -22,11 +22,9 @@ import {
 } from "lucide-react";
 import {
   formatCurrency,
-  formatShortDate,
   getCategoryById,
   PAYMENT_METHOD_LABELS,
 } from "@/lib/validations/transaction";
-import type { LocalTransaction } from "@/lib/db/indexedDB";
 
 interface Transaction {
   id: string;
@@ -186,22 +184,19 @@ export function TransactionList({
                         </p>
                         {/* 동기화 상태 */}
                         {transaction.syncStatus === "pending" && (
-                          <CloudOff
-                            className="h-3 w-3 flex-shrink-0 text-yellow-500"
-                            title="동기화 대기 중"
-                          />
+                          <span title="동기화 대기 중">
+                            <CloudOff className="h-3 w-3 flex-shrink-0 text-yellow-500" />
+                          </span>
                         )}
                         {transaction.syncStatus === "conflict" && (
-                          <AlertCircle
-                            className="h-3 w-3 flex-shrink-0 text-red-500"
-                            title="동기화 충돌"
-                          />
+                          <span title="동기화 충돌">
+                            <AlertCircle className="h-3 w-3 flex-shrink-0 text-red-500" />
+                          </span>
                         )}
                         {transaction.syncStatus === "synced" && (
-                          <Cloud
-                            className="h-3 w-3 flex-shrink-0 text-green-500 opacity-0 group-hover:opacity-100"
-                            title="동기화 완료"
-                          />
+                          <span title="동기화 완료">
+                            <Cloud className="h-3 w-3 flex-shrink-0 text-green-500 opacity-0 group-hover:opacity-100" />
+                          </span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -60,11 +60,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         income += t.amount;
       } else {
         expense += t.amount;
-        if (!categoryExpenses[t.categoryId]) {
-          categoryExpenses[t.categoryId] = { amount: 0, count: 0 };
+        const catId = t.categoryId as string;
+        if (!categoryExpenses[catId]) {
+          categoryExpenses[catId] = { amount: 0, count: 0 };
         }
-        categoryExpenses[t.categoryId].amount += t.amount;
-        categoryExpenses[t.categoryId].count += 1;
+        const catData = categoryExpenses[catId];
+        catData.amount += t.amount;
+        catData.count += 1;
       }
     });
 

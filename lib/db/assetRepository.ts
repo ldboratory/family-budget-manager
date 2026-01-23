@@ -5,16 +5,10 @@
  */
 
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
   setDoc,
   updateDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
   Timestamp,
   runTransaction,
 } from "firebase/firestore";
@@ -92,10 +86,6 @@ export class AssetRepository implements IAssetRepository {
 
   private getDocRef(householdId: string, assetId: string) {
     return doc(db, this.getCollectionPath(householdId), assetId);
-  }
-
-  private getCollectionRef(householdId: string) {
-    return collection(db, this.getCollectionPath(householdId));
   }
 
   // ===== 생성 =====
@@ -501,7 +491,7 @@ export class AssetRepository implements IAssetRepository {
   }
 
   async updateSyncStatus(
-    householdId: string,
+    _householdId: string,
     assetId: string,
     status: SyncStatus
   ): Promise<RepositoryResult<void>> {

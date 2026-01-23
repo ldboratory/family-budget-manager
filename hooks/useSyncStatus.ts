@@ -14,7 +14,6 @@ import {
   getSyncEngine,
   type SyncState,
   type SyncEvent,
-  type SyncEventType,
 } from "@/lib/sync/syncEngine";
 import { pendingChangesRepository, type PendingChange } from "@/lib/db/pendingChanges";
 import type { ConflictDetails } from "@/lib/sync/conflictResolver";

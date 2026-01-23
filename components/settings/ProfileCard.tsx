@@ -10,7 +10,7 @@
 
 "use client";
 
-import { User, Mail, Shield, Calendar } from "lucide-react";
+import { User, Mail, Shield } from "lucide-react";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useProfile } from "@/hooks/usePreferences";
 
@@ -22,7 +22,7 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ compact = false, onClick }: ProfileCardProps) {
-  const { user } = useAuthContext();
+  const { user, firebaseUser } = useAuthContext();
   const { data: profile, isLoading } = useProfile();
 
   if (isLoading) {
@@ -45,7 +45,7 @@ export function ProfileCard({ compact = false, onClick }: ProfileCardProps) {
 
   // 로그인 제공자 확인
   const getProviderInfo = () => {
-    const providerData = user.providerData?.[0];
+    const providerData = firebaseUser?.providerData?.[0];
     if (!providerData) return { name: "이메일", icon: "email" };
 
     switch (providerData.providerId) {
@@ -61,7 +61,7 @@ export function ProfileCard({ compact = false, onClick }: ProfileCardProps) {
   const provider = getProviderInfo();
   const displayName = profile?.displayName || user.displayName || "사용자";
   const email = profile?.email || user.email || "";
-  const avatar = profile?.avatar || user.photoURL;
+  const avatar = profile?.avatar || firebaseUser?.photoURL;
 
   // 컴팩트 모드
   if (compact) {

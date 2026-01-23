@@ -13,7 +13,7 @@ import {
   type LocalPreferences,
   type PreferencesUpdateInput,
 } from "@/lib/db/preferencesRepository";
-import type { ThemeMode, CurrencyCode, PaymentMethod } from "@/types";
+import type { ThemeMode, CurrencyCode } from "@/types";
 
 // =====================================================
 // Query Keys

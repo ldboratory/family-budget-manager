@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { z } from "zod";
-import type { Preferences } from "@/types";
 
 // 설정 업데이트 스키마
 const updatePreferencesSchema = z.object({

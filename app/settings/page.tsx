@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -38,7 +38,7 @@ function useCurrentHousehold() {
 }
 
 export default function SettingsPage() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuthContext();
+  const { isAuthenticated, loading: authLoading } = useAuthContext();
   const { householdId, householdName } = useCurrentHousehold();
   const [activeSection, setActiveSection] = useState<string>("profile");
 

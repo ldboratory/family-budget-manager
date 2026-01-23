@@ -143,7 +143,7 @@ const CustomLegend = ({ payload, onClick }: any) => {
 
 export function CategoryPieChart({
   data,
-  totalAmount,
+  totalAmount: _totalAmount,
   onCategoryClick,
   height = 280,
 }: CategoryPieChartProps) {

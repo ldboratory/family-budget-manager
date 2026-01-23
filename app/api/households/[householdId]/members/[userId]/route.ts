@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { z } from "zod";
-import type { Household, HouseholdMember, UserRole } from "@/types";
+import type { Household, UserRole } from "@/types";
 
 interface RouteParams {
   params: {
@@ -241,7 +241,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // owner의 역할은 변경 불가
-    if (household.members[targetMemberIndex].role === "owner") {
+    const targetMember = household.members[targetMemberIndex];
+    if (!targetMember || targetMember.role === "owner") {
       return NextResponse.json(
         {
           success: false,
@@ -257,7 +258,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     // 역할 업데이트
     const updatedMembers = [...household.members];
     updatedMembers[targetMemberIndex] = {
-      ...updatedMembers[targetMemberIndex],
+      ...targetMember,
       role: newRole as UserRole,
     };
 

@@ -31,7 +31,7 @@ interface IncomeExpenseBarChartProps {
 // X축 레이블 포맷
 const formatXAxis = (value: string) => {
   const [, month] = value.split("-");
-  return `${parseInt(month)}월`;
+  return `${parseInt(month ?? "0")}월`;
 };
 
 // Y축 레이블 포맷
@@ -56,7 +56,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
     return (
       <div className="rounded-lg border border-border bg-card p-3 shadow-lg">
-        <p className="mb-2 font-medium">{`${year}년 ${parseInt(month)}월`}</p>
+        <p className="mb-2 font-medium">{`${year ?? ""}년 ${parseInt(month ?? "0")}월`}</p>
         <p className="text-sm text-green-600">수입: {formatCurrency(income)}</p>
         <p className="text-sm text-red-600">지출: {formatCurrency(expense)}</p>
         <hr className="my-2 border-border" />

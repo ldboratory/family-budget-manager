@@ -12,15 +12,11 @@ import { Timestamp } from "firebase/firestore";
 import { transactionRepository } from "@/lib/db/transactionRepository";
 import {
   getLocalDB,
-  toLocalTransaction,
   type LocalTransaction,
 } from "@/lib/db/indexedDB";
 import type {
-  Transaction,
   TransactionCreateInput,
-  TransactionUpdateInput,
   TransactionFilter,
-  PaginatedResponse,
 } from "@/types";
 import type { CreateTransactionFormData } from "@/lib/validations/transaction";
 
@@ -189,7 +185,7 @@ export function useCreateTransaction() {
 
       return localTransaction;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // 캐시 무효화
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
@@ -371,7 +367,7 @@ export function useDeleteTransaction() {
 
       return true;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: transactionKeys.lists(),
       });

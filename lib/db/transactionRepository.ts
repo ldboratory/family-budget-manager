@@ -16,17 +16,13 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  updateDoc,
   deleteDoc,
   query,
-  where,
   orderBy,
   limit,
-  startAfter,
   Timestamp,
   runTransaction,
   type DocumentData,
-  type QueryConstraint,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {
@@ -617,7 +613,7 @@ export class TransactionRepository implements ITransactionRepository {
   }
 
   async updateSyncStatus(
-    householdId: string,
+    _householdId: string,
     transactionId: string,
     status: SyncStatus
   ): Promise<RepositoryResult<void>> {

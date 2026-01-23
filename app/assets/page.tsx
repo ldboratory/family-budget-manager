@@ -24,8 +24,6 @@ import { useAuthContext } from "@/components/auth/AuthProvider";
 import { AssetForm } from "@/components/assets/AssetForm";
 import { AssetList } from "@/components/assets/AssetList";
 import {
-  useAssets,
-  useAssetSummary,
   useCreateAsset,
   useUpdateAsset,
   useDeleteAsset,

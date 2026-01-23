@@ -15,7 +15,6 @@ import {
   X,
   Loader2,
   Calendar,
-  Tag,
   CreditCard,
   FileText,
   Store,

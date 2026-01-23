@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -37,7 +37,7 @@ import {
   type MonthlyStats,
   type AssetCategoryStats,
 } from "@/lib/analytics";
-import { getLocalDB, type LocalTransaction } from "@/lib/db/indexedDB";
+import { type LocalTransaction } from "@/lib/db/indexedDB";
 
 // 임시 household ID
 const DEMO_HOUSEHOLD_ID = "demo-household";

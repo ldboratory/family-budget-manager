@@ -31,7 +31,7 @@ interface TrendLineChartProps {
 // X축 레이블 포맷
 const formatXAxis = (value: string) => {
   const [, month] = value.split("-");
-  return `${parseInt(month)}월`;
+  return `${parseInt(month ?? "0")}월`;
 };
 
 // Y축 레이블 포맷 (단위: 만원)
@@ -51,7 +51,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const [year, month] = (label as string).split("-");
     return (
       <div className="rounded-lg border border-border bg-card p-3 shadow-lg">
-        <p className="mb-2 font-medium">{`${year}년 ${parseInt(month)}월`}</p>
+        <p className="mb-2 font-medium">{`${year ?? ""}년 ${parseInt(month ?? "0")}월`}</p>
         {payload.map((entry: any, index: number) => (
           <p
             key={index}

@@ -8,10 +8,8 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Timestamp } from "firebase/firestore";
 import { assetRepository } from "@/lib/db/assetRepository";
 import { getLocalDB, type LocalAsset } from "@/lib/db/indexedDB";
-import type { Asset, AssetCategory } from "@/types";
 import type { CreateAssetFormData } from "@/lib/validations/asset";
 
 // =====================================================

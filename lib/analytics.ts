@@ -4,7 +4,7 @@
  * 월간/연간 통계 계산, 카테고리별 분석, 자산 추이 등을 처리합니다.
  */
 
-import { getLocalDB, type LocalTransaction, type LocalAsset } from "./db/indexedDB";
+import { getLocalDB, type LocalTransaction } from "./db/indexedDB";
 import {
   DEFAULT_EXPENSE_CATEGORIES,
   DEFAULT_INCOME_CATEGORIES,
@@ -100,11 +100,13 @@ export async function calculateMonthlyStats(
     } else {
       expense += t.amount;
       // 카테고리별 집계
-      if (!categoryExpenses[t.categoryId]) {
-        categoryExpenses[t.categoryId] = { amount: 0, count: 0 };
+      const catId = t.categoryId;
+      if (!categoryExpenses[catId]) {
+        categoryExpenses[catId] = { amount: 0, count: 0 };
       }
-      categoryExpenses[t.categoryId].amount += t.amount;
-      categoryExpenses[t.categoryId].count += 1;
+      const catData = categoryExpenses[catId];
+      catData.amount += t.amount;
+      catData.count += 1;
     }
   });
 
@@ -168,11 +170,13 @@ export async function calculateCategoryStats(
   const categoryData: Record<string, { amount: number; count: number }> = {};
 
   transactions.forEach((t) => {
-    if (!categoryData[t.categoryId]) {
-      categoryData[t.categoryId] = { amount: 0, count: 0 };
+    const catId = t.categoryId;
+    if (!categoryData[catId]) {
+      categoryData[catId] = { amount: 0, count: 0 };
     }
-    categoryData[t.categoryId].amount += t.amount;
-    categoryData[t.categoryId].count += 1;
+    const catData = categoryData[catId];
+    catData.amount += t.amount;
+    catData.count += 1;
   });
 
   const defaultCategories =
@@ -315,14 +319,16 @@ export async function calculateUserComparison(
         categories: {},
       };
     }
-    userExpenses[userId].total += t.amount;
-    userExpenses[userId].count += 1;
+    const userData = userExpenses[userId];
+    userData.total += t.amount;
+    userData.count += 1;
 
     // 카테고리별 집계
-    if (!userExpenses[userId].categories[t.categoryId]) {
-      userExpenses[userId].categories[t.categoryId] = 0;
+    const catId = t.categoryId;
+    if (!userData.categories[catId]) {
+      userData.categories[catId] = 0;
     }
-    userExpenses[userId].categories[t.categoryId] += t.amount;
+    userData.categories[catId] += t.amount;
   });
 
   return Object.entries(userExpenses)
@@ -395,11 +401,13 @@ export async function calculateAssetCategoryStats(
       totalAssets += amount;
     }
 
-    if (!categoryData[asset.category]) {
-      categoryData[asset.category] = { amount: 0, count: 0 };
+    const catKey = asset.category;
+    if (!categoryData[catKey]) {
+      categoryData[catKey] = { amount: 0, count: 0 };
     }
-    categoryData[asset.category].amount += amount;
-    categoryData[asset.category].count += 1;
+    const catData = categoryData[catKey];
+    catData.amount += amount;
+    catData.count += 1;
   });
 
   const totalPositive = totalAssets; // 부채 제외한 자산 합계
@@ -497,7 +505,7 @@ export async function calculateYearlyStats(
  */
 export function parseMonthString(monthStr: string): { year: number; month: number } {
   const [year, month] = monthStr.split("-").map(Number);
-  return { year, month };
+  return { year: year ?? 0, month: month ?? 0 };
 }
 
 /**

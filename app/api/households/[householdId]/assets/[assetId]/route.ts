@@ -28,7 +28,7 @@ interface RouteParams {
 /**
  * GET: 자산 상세 조회
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { householdId, assetId } = params;
 

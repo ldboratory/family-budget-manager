@@ -17,12 +17,11 @@ import {
   Tooltip,
 } from "recharts";
 import {
-  Wallet,
   TrendingUp,
   TrendingDown,
   ArrowRight,
 } from "lucide-react";
-import { formatAssetAmount, ASSET_CATEGORIES, type AssetCategoryType } from "@/lib/validations/asset";
+import { formatAssetAmount } from "@/lib/validations/asset";
 import type { AssetCategoryStats } from "@/lib/analytics";
 import Link from "next/link";
 

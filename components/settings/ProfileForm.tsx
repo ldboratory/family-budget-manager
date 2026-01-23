@@ -26,7 +26,7 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function ProfileForm() {
-  const { user, loading: isLoading } = useAuthContext();
+  const { user, firebaseUser, loading: isLoading } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -72,12 +72,12 @@ export function ProfileForm() {
 
   // 폼 제출
   const onSubmit = async (data: ProfileFormData) => {
-    if (!user) return;
+    if (!firebaseUser) return;
 
     setIsUpdating(true);
     setSaveSuccess(false);
     try {
-      await firebaseUpdateProfile(user, {
+      await firebaseUpdateProfile(firebaseUser, {
         displayName: data.displayName,
         // TODO: 실제 구현에서는 Firebase Storage에 업로드 후 URL 사용
         ...(avatarPreview && { photoURL: avatarPreview }),
@@ -127,9 +127,9 @@ export function ProfileForm() {
           {/* 아바타 */}
           <div className="relative flex-shrink-0">
             <div className="relative">
-              {avatarPreview || user?.photoURL ? (
+              {avatarPreview || firebaseUser?.photoURL ? (
                 <img
-                  src={avatarPreview || user?.photoURL || ""}
+                  src={avatarPreview || firebaseUser?.photoURL || ""}
                   alt="프로필 사진"
                   className="h-20 w-20 rounded-full object-cover"
                 />

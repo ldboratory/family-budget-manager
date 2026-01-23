@@ -76,7 +76,7 @@ function formatJoinDate(timestamp: any): string {
 export function MemberList({
   members,
   currentUserId,
-  currentUserRole,
+  currentUserRole: _currentUserRole,
   isOwner,
   isLoading = false,
   onRemove,

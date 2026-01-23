@@ -11,15 +11,13 @@ import {
   doc,
   setDoc,
   getDocs,
-  query,
-  where,
   Timestamp,
   arrayUnion,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { z } from "zod";
-import type { Household, HouseholdMember, User } from "@/types";
+import type { Household, HouseholdMember } from "@/types";
 
 // 유효성 검사 스키마
 const createHouseholdSchema = z.object({

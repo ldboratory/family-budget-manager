@@ -25,14 +25,15 @@ const CURRENCY_OPTIONS: { value: CurrencyCode; label: string; symbol: string }[]
   { value: "USD", label: "미국 달러", symbol: "$" },
   { value: "EUR", label: "유로", symbol: "€" },
   { value: "JPY", label: "일본 엔", symbol: "¥" },
-  { value: "CNY", label: "중국 위안", symbol: "¥" },
 ];
 
 // 결제수단 옵션
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string }[] = [
-  { value: "card", label: "카드" },
+  { value: "credit-card", label: "신용카드" },
+  { value: "debit-card", label: "체크카드" },
   { value: "cash", label: "현금" },
-  { value: "bank_transfer", label: "계좌이체" },
+  { value: "bank-transfer", label: "계좌이체" },
+  { value: "mobile-pay", label: "간편결제" },
   { value: "other", label: "기타" },
 ];
 
@@ -68,20 +69,19 @@ function getStoredValue<T>(key: string, defaultValue: T): T {
 
 export function PreferencesForm() {
   const [mounted, setMounted] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
 
   // 로컬 상태
   const [theme, setTheme] = useState<ThemeMode>("system");
   const [currency, setCurrency] = useState<CurrencyCode>("KRW");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("credit-card");
 
   // 마운트 시 localStorage에서 값 로드
   useEffect(() => {
     setMounted(true);
     setTheme(getStoredValue(STORAGE_KEYS.theme, "system") as ThemeMode);
     setCurrency(getStoredValue(STORAGE_KEYS.currency, "KRW") as CurrencyCode);
-    setPaymentMethod(getStoredValue(STORAGE_KEYS.paymentMethod, "card") as PaymentMethod);
+    setPaymentMethod(getStoredValue(STORAGE_KEYS.paymentMethod, "credit-card") as PaymentMethod);
   }, []);
 
   // 시스템 테마 변경 감지

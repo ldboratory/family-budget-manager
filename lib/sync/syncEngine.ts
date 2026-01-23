@@ -596,7 +596,7 @@ class SyncEngine {
    */
   private async processDelete(
     docRef: ReturnType<typeof doc>,
-    change: PendingChange
+    _change: PendingChange
   ): Promise<void> {
     await deleteDoc(docRef);
   }

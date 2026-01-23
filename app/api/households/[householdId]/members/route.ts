@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   doc,
   getDoc,
-  updateDoc,
   collection,
   addDoc,
   Timestamp,
@@ -19,7 +18,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { z } from "zod";
-import type { Household, HouseholdMember, Invite, UserRole } from "@/types";
+import type { Household, Invite, UserRole } from "@/types";
 
 interface RouteParams {
   params: {

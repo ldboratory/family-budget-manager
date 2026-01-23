@@ -8,7 +8,6 @@ import {
   doc,
   getDoc,
   setDoc,
-  updateDoc,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";

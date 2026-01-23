@@ -12,10 +12,8 @@
 import { useState } from "react";
 import {
   Search,
-  Calendar,
   Filter,
   X,
-  ChevronDown,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";

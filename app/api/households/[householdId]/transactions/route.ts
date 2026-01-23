@@ -15,9 +15,7 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
   Timestamp,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {

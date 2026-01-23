@@ -10,7 +10,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   doc,
   getDoc,
-  updateDoc,
   deleteDoc,
   Timestamp,
   runTransaction,
@@ -29,7 +28,7 @@ interface RouteParams {
 /**
  * GET: 거래 상세 조회
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { householdId, transactionId } = params;
 

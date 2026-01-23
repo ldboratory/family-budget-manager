@@ -69,7 +69,6 @@ export interface SyncResult {
 // =====================================================
 
 import Dexie from "dexie";
-import type { FamilyBudgetDB } from "./indexedDB";
 
 // 기존 DB에 pending_changes 테이블 추가
 declare module "./indexedDB" {

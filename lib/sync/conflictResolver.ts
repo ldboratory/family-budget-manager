@@ -221,7 +221,7 @@ export function resolveConflict<T extends Record<string, any>>(
  */
 function resolveLWW<T extends Record<string, any>>(
   conflict: ConflictData<T>,
-  conflictingFields: string[]
+  _conflictingFields: string[]
 ): ConflictResult<T> {
   // 최신 타임스탬프 기준으로 결정
   if (conflict.localTimestamp > conflict.remoteTimestamp) {

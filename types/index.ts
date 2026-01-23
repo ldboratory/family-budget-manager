@@ -343,15 +343,15 @@ export type TransactionUpdateInput = Partial<TransactionCreateInput> & {
  */
 export type AssetCategory =
   | "cash" // 현금
-  | "bank-account" // 은행 계좌
-  | "savings" // 적금/예금
-  | "investment" // 투자 (주식, 펀드 등)
-  | "real-estate" // 부동산
-  | "vehicle" // 차량
+  | "bank" // 은행예금
+  | "stock" // 주식
+  | "bond" // 채권
+  | "real_estate" // 부동산
+  | "crypto" // 암호화폐
   | "insurance" // 보험
   | "pension" // 연금
-  | "loan" // 대출 (부채, 음수 자산)
-  | "other"; // 기타
+  | "loan" // 대출 (부채)
+  | "etc"; // 기타
 
 /**
  * 자산

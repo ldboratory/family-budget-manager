@@ -8,7 +8,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   doc,
-  getDoc,
   updateDoc,
   collection,
   getDocs,
@@ -18,7 +17,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { Household, HouseholdMember, Invite } from "@/types";
+import type { Household, HouseholdMember } from "@/types";
 
 interface RouteParams {
   params: {
@@ -29,7 +28,7 @@ interface RouteParams {
 /**
  * GET: 초대 코드로 초대 정보 조회
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { inviteCode } = params;
 
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const householdSnapshot = await getDocs(householdQuery);
 
     if (!householdSnapshot.empty) {
-      const householdDoc = householdSnapshot.docs[0];
+      const householdDoc = householdSnapshot.docs[0]!;
       const household = householdDoc.data() as Household;
 
       // 만료 확인
@@ -132,7 +131,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const householdDoc = householdSnapshot.docs[0];
+    const householdDoc = householdSnapshot.docs[0]!;
     const household = householdDoc.data() as Household;
     const householdId = householdDoc.id;
 
