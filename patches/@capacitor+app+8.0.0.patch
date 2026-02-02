@@ -1,0 +1,13 @@
+diff --git a/node_modules/@capacitor/app/ios/Sources/AppPlugin/AppPlugin.swift b/node_modules/@capacitor/app/ios/Sources/AppPlugin/AppPlugin.swift
+index 1234567..abcdefg 100644
+--- a/node_modules/@capacitor/app/ios/Sources/AppPlugin/AppPlugin.swift
++++ b/node_modules/@capacitor/app/ios/Sources/AppPlugin/AppPlugin.swift
+@@ -88,7 +88,7 @@ public class AppPlugin: CAPPlugin, CAPBridgedPlugin {
+                 "version": info["CFBundleShortVersionString"] as? String ?? ""
+             ])
+         } else {
+-            call.reject("Unable to get App Info")
++            call.reject("Unable to get App Info", nil, nil, nil)
+         }
+
+     }
